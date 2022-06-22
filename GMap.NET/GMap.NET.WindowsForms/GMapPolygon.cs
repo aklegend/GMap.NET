@@ -133,10 +133,13 @@ namespace GMap.NET.WindowsForms
             {
                 if (IsVisible)
                 {
-                    if (_graphicsPath != null)
+                    lock (lockObj)
                     {
-                        g.FillPath(Fill, _graphicsPath);
-                        g.DrawPath(Stroke, _graphicsPath);
+                        if (graphicsPath != null)
+                        {
+                            g.FillPath(Fill, graphicsPath);
+                            g.DrawPath(Stroke, graphicsPath);
+                        }
                     }
                 }
             }
