@@ -709,7 +709,27 @@ namespace GMap.NET.WindowsForms
 
             route.UpdateGraphicsPath();
         }
+         /// <summary>
+         /// Update the position of the line
+         /// </summary>
+         /// <param name="route">Line</param>
+         /// <param name="pointArr">Screen coordinate array</param>
+         public Point[] UpdateRouteToArray(GMapRoute route)
+        {
+            Point[] pointArr = new Point[route.Points.Count];
 
+            for (int i = 0; i < route.Points.Count; i++)
+            {
+                GPoint p = FromLatLngToLocal(route.Points[i]);
+                p.OffsetNegative(Core.renderOffset); //Set Offset
+
+                pointArr[i] = new Point((int)p.X, (int)p.Y);
+            }
+
+            return pointArr;
+        }
+         
+         
         /// <summary>
         ///     updates polygons local position
         /// </summary>
