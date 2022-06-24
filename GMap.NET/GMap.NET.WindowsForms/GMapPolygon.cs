@@ -90,7 +90,10 @@ namespace GMap.NET.WindowsForms
         {
             if (_graphicsPath != null)
             {
-                return _graphicsPath.IsVisible(x, y);
+                lock (lockObj)
+                {
+                    return _graphicsPath.IsVisible(x, y);
+                }
             }
 
             return false;
@@ -105,14 +108,16 @@ namespace GMap.NET.WindowsForms
             }
             else
             {
+                   lock (lockObj)
                 _graphicsPath.Reset();
             }
 
+            lock (lockObj)
             {
-                var pnts = new Point[LocalPoints.Count];
+                Point[] pnts = new Point[LocalPoints.Count];
                 for (int i = 0; i < LocalPoints.Count; i++)
                 {
-                    var p2 = new Point((int)LocalPoints[i].X, (int)LocalPoints[i].Y);
+                    Point p2 = new Point((int)LocalPoints[i].X, (int)LocalPoints[i].Y);
                     pnts[pnts.Length - 1 - i] = p2;
                 }
 
@@ -135,10 +140,10 @@ namespace GMap.NET.WindowsForms
                 {
                     lock (lockObj)
                     {
-                        if (graphicsPath != null)
+                        if (_graphicsPath != null)
                         {
-                            g.FillPath(Fill, graphicsPath);
-                            g.DrawPath(Stroke, graphicsPath);
+                            g.FillPath(Fill, _graphicsPath);
+                            g.DrawPath(Stroke, _graphicsPath);
                         }
                     }
                 }
@@ -299,6 +304,19 @@ namespace GMap.NET.WindowsForms
         }
 
         #endregion
+        
+        private object lockObj = new object();
+        public void AddLocalPoint(GPoint p)
+        {
+            lock (lockObj)
+                LocalPoints.Add(p);
+        }
+
+        public void ClearLocalPoint()
+        {
+            lock (lockObj)
+                LocalPoints.Clear();
+        }
     }
 
     public delegate void PolygonClick(GMapPolygon item, MouseEventArgs e);
